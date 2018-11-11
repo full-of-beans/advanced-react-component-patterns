@@ -42,26 +42,39 @@ import {Switch} from '../switch'
 // 🐨 create a ToggleContext with React.createContext here
 const ToggleContext = React.createContext();
 
+const ToggleConsumer = (props) => {
+  return (
+    <ToggleContext.Consumer>
+      {context => {
+        if (!context) {
+          throw new Error('Toggle compound components must be rendered within the Toggle Component')
+        }
+        return props.children(context)
+      }}
+    </ToggleContext.Consumer>
+  )
+};
+
 class Toggle extends React.Component {
   // 🐨 each of these compound components will need to be changed to use
   // ToggleContext.Consumer and rather than getting `on` and `toggle`
   // from props, it'll get it from the ToggleContext.Consumer value.
   static On = ({children}) => (
-    <ToggleContext.Consumer>
+    <ToggleConsumer>
       {contextValue => (contextValue.on ? children : null)}
-    </ToggleContext.Consumer>
+    </ToggleConsumer>
   )
   static Off = ({children}) => (
-    <ToggleContext.Consumer>
+    <ToggleConsumer>
       {contextValue => (contextValue.on ? null : children)}
-    </ToggleContext.Consumer>
+    </ToggleConsumer>
   )
   static Button = ({on, toggle, ...props}) => (
-    <ToggleContext.Consumer>
+    <ToggleConsumer>
       {contextValue => (
         <Switch on={contextValue.on} onClick={contextValue.toggle} {...props} />
       )}
-    </ToggleContext.Consumer>
+    </ToggleConsumer>
     
   )
   state = {on: false}
@@ -96,13 +109,13 @@ function Usage({
   onToggle = (...args) => console.log('onToggle', ...args),
 }) {
   return (
-    <Toggle onToggle={onToggle}>
+    <div onToggle={onToggle}>
       <Toggle.On>The button is on</Toggle.On>
       <Toggle.Off>The button is off</Toggle.Off>
       <div>
         <Toggle.Button />
       </div>
-    </Toggle>
+    </div>
   )
 }
 Usage.title = 'Flexible Compound Components'
