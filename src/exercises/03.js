@@ -77,19 +77,20 @@ class Toggle extends React.Component {
     </ToggleConsumer>
     
   )
-  state = {on: false}
+  
   toggle = () =>
     this.setState(
       ({on}) => ({on: !on}),
       () => this.props.onToggle(this.state.on),
     )
+    state = {on: false, toggle: this.toggle}  
   render() {
     // Because this.props.children is _immediate_ children only, we need
     // to 🐨 remove this map function and render our context provider with
     // this.props.children as the children of the provider. Then we'll
     // expose the `on` state and `toggle` method as properties in the context
     // value (the value prop).
-    return <ToggleContext.Provider value={{on: this.state.on, toggle: this.toggle}}>
+    return <ToggleContext.Provider value={this.state}>
       {this.props.children}
     </ToggleContext.Provider>
   }
@@ -109,13 +110,13 @@ function Usage({
   onToggle = (...args) => console.log('onToggle', ...args),
 }) {
   return (
-    <div onToggle={onToggle}>
+    <Toggle onToggle={onToggle}>
       <Toggle.On>The button is on</Toggle.On>
       <Toggle.Off>The button is off</Toggle.Off>
       <div>
         <Toggle.Button />
       </div>
-    </div>
+    </Toggle>
   )
 }
 Usage.title = 'Flexible Compound Components'
